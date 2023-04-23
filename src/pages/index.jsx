@@ -1,10 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Banner from "@/components/Banner/banner";
+import Card from "@/components/Card/Card";
 
-const inter = Inter({ subsets: ["latin"] });
+const ibmPlexSans = IBM_Plex_Sans({ weight: ['400', '500', '700'], subsets: ['latin'], style: 'normal' })
+
 
 export default function Home() {
   const handleOnBannerBtnClick = () => {
@@ -18,7 +20,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
+      <main className={[ibmPlexSans.className, styles.main].join(' ')}>
         <Banner
           buttonText="View stores nearby"
           handleOnClick={handleOnBannerBtnClick}
@@ -31,6 +33,7 @@ export default function Home() {
             height={400}
           />
         </div>
+        <Card />
       </main>
     </>
   );
