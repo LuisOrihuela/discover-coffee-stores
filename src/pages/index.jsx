@@ -4,11 +4,19 @@ import { IBM_Plex_Sans } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Banner from "@/components/Banner/banner";
 import Card from "@/components/Card/Card";
+import coffeeStores from "@/data/coffee-stores.json"
 
 const ibmPlexSans = IBM_Plex_Sans({ weight: ['400', '500', '700'], subsets: ['latin'], style: 'normal' })
 
+export async function getStaticProps(context) {
+  return {
+    props: {
+      coffeeStores
+    }
+  }
+}
 
-export default function Home() {
+export default function Home({ coffeeStores }) {
   const handleOnBannerBtnClick = () => {
     console.log("click!");
   };
@@ -33,7 +41,13 @@ export default function Home() {
             height={400}
           />
         </div>
-        <Card />
+        <div className={styles.cardLayout}>
+          {
+            coffeeStores.map(({ name, id, imgUrl }) => (
+              <Card key={id} className={styles.card} name={name} imgUrl={imgUrl} href={`/coffee-store/${id}`} />
+            ))
+          }
+        </div>
       </main>
     </>
   );
