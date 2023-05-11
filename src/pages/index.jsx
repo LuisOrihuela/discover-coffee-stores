@@ -4,16 +4,20 @@ import { IBM_Plex_Sans } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Banner from "@/components/Banner/banner";
 import Card from "@/components/Card/Card";
-import coffeeStores from "@/data/coffee-stores.json"
+import coffeeStores from "@/data/coffee-stores.json";
 
-const ibmPlexSans = IBM_Plex_Sans({ weight: ['400', '500', '700'], subsets: ['latin'], style: 'normal' })
+const ibmPlexSans = IBM_Plex_Sans({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  style: "normal",
+});
 
-export async function getStaticProps(context) {
+export async function getStaticProps() {
   return {
     props: {
-      coffeeStores
-    }
-  }
+      coffeeStores,
+    },
+  };
 }
 
 export default function Home({ coffeeStores }) {
@@ -28,7 +32,7 @@ export default function Home({ coffeeStores }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={[ibmPlexSans.className, styles.main].join(' ')}>
+      <main className={[ibmPlexSans.className, styles.main].join(" ")}>
         <Banner
           buttonText="View stores nearby"
           handleOnClick={handleOnBannerBtnClick}
@@ -41,13 +45,22 @@ export default function Home({ coffeeStores }) {
             height={400}
           />
         </div>
-        <div className={styles.cardLayout}>
-          {
-            coffeeStores.map(({ name, id, imgUrl }) => (
-              <Card key={id} className={styles.card} name={name} imgUrl={imgUrl} href={`/coffee-store/${id}`} />
-            ))
-          }
-        </div>
+        {coffeeStores.length > 0 && (
+          <>
+            <h2 className={styles.heading2}>Toronto stores</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStores.map(({ name, id, imgUrl }) => (
+                <Card
+                  key={id}
+                  className={styles.card}
+                  name={name}
+                  imgUrl={imgUrl}
+                  href={`/coffee-store/${id}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </main>
     </>
   );
