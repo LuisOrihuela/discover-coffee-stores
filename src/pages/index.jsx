@@ -4,7 +4,8 @@ import { IBM_Plex_Sans } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Banner from "@/components/Banner/banner";
 import Card from "@/components/Card/Card";
-import coffeeStores from "@/data/coffee-stores.json";
+import { fetchCoffeeStores } from "@/lib/coffee-stores";
+import { FALLBACK_IMG } from "@/constants";
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "700"],
@@ -13,6 +14,8 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export async function getStaticProps() {
+  const coffeeStores = await fetchCoffeeStores();
+
   return {
     props: {
       coffeeStores,
@@ -54,7 +57,7 @@ export default function Home({ coffeeStores }) {
                   key={id}
                   className={styles.card}
                   name={name}
-                  imgUrl={imgUrl}
+                  imgUrl={imgUrl || FALLBACK_IMG}
                   href={`/coffee-store/${id}`}
                 />
               ))}
