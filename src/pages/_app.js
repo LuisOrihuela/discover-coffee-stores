@@ -1,8 +1,11 @@
+import { StoreProvider } from '@/store/storeContext'
 import '@/styles/globals.css'
-import { Fragment } from 'react'
+
+
+
 
 export default function App({ Component, pageProps }) {
-  return <Fragment>
+  return <StoreProvider>
     <Component {...pageProps} />
-  </Fragment>
+  </StoreProvider>
 }

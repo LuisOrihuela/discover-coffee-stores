@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 // import coffeeStores from "../../data/coffee-stores.json";
 import Head from "next/head";
 import styles from "@/styles/coffee-store.module.css";
@@ -8,6 +8,8 @@ import Image from "next/image";
 import cls from "classnames";
 import { fetchCoffeeStores } from "@/lib/coffee-stores";
 import { FALLBACK_IMG } from "@/constants";
+import { StoreContext } from "@/store/storeContext";
+import { isEmpty } from "@/utils";
 
 // this paths will determine what pages will be generated at build time
 export async function getStaticPaths() {
@@ -26,7 +28,8 @@ export async function getStaticProps({ params }) {
   const { id } = params;
 
   const coffeeStores = await fetchCoffeeStores();
-  const coffeeStore = coffeeStores.find((coffeeStore) => coffeeStore.id === id);
+  const coffeeStore =
+    coffeeStores.find((coffeeStore) => coffeeStore.id === id) ?? {};
 
   return {
     props: {
@@ -35,8 +38,23 @@ export async function getStaticProps({ params }) {
   };
 }
 
-const CoffeeStore = ({ coffeeStore }) => {
+const CoffeeStore = (initialProps) => {
   const router = useRouter();
+  const id = router.query.id;
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore)) {
+      if (coffeeStores.length) {
+        const foundCoffeeStore = coffeeStores.find((coffeeStore) => {
+          return coffeeStore.id.toString() === id;
+        });
+        setCoffeeStore(foundCoffeeStore);
+      }
+    }
+  }, [id]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;

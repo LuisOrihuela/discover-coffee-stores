@@ -6,6 +6,9 @@ import Banner from "@/components/Banner/banner";
 import Card from "@/components/Card/Card";
 import { fetchCoffeeStores } from "@/lib/coffee-stores";
 import { FALLBACK_IMG } from "@/constants";
+import useTrackLocation from "@/hooks/use-track-location";
+import { useContext, useEffect, useState } from "react";
+import { ACTION_TYPES, StoreContext } from "@/store/storeContext";
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "700"],
@@ -23,10 +26,34 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home({ coffeeStores }) {
+export default function Home(props) {
+  const { dispatch, state } = useContext(StoreContext);
+  const { coffeeStores } = state;
+  const [coffeeStoresError, setCoffeeStoresError] = useState();
+  const { handleTrackLocation, isLoading, latLong, locationErrorMsg } =
+    useTrackLocation();
   const handleOnBannerBtnClick = () => {
-    console.log("click!");
+    handleTrackLocation();
   };
+
+  useEffect(() => {
+    async function fetchStores() {
+      if (latLong) {
+        try {
+          const coffeeStores = await fetchCoffeeStores(latLong, 30);
+          dispatch({
+            type: ACTION_TYPES.SET_COFFEE_STORES,
+            payload: coffeeStores,
+          });
+        } catch (error) {
+          setCoffeeStoresError(error.message);
+          console.error(error);
+        }
+      }
+    }
+    fetchStores();
+  }, [latLong, dispatch]);
+
   return (
     <>
       <Head>
@@ -37,9 +64,15 @@ export default function Home({ coffeeStores }) {
       </Head>
       <main className={[ibmPlexSans.className, styles.main].join(" ")}>
         <Banner
-          buttonText="View stores nearby"
+          buttonText={isLoading ? "Locating..." : "View stores nearby"}
           handleOnClick={handleOnBannerBtnClick}
         />
+        {locationErrorMsg && (
+          <span>Something went wrong: {locationErrorMsg}</span>
+        )}
+        {coffeeStoresError && (
+          <span>Something went wrong: {coffeeStoresError}</span>
+        )}
         <div className={styles.heroImage}>
           <Image
             src="/static/hero-image.png"
@@ -48,9 +81,9 @@ export default function Home({ coffeeStores }) {
             height={400}
           />
         </div>
-        {coffeeStores.length > 0 && (
-          <>
-            <h2 className={styles.heading2}>Toronto stores</h2>
+        {coffeeStores?.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Stores near me</h2>
             <div className={styles.cardLayout}>
               {coffeeStores.map(({ name, id, imgUrl }) => (
                 <Card
@@ -62,7 +95,23 @@ export default function Home({ coffeeStores }) {
                 />
               ))}
             </div>
-          </>
+          </div>
+        )}
+        {!coffeeStores.length && props.coffeeStores.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Toronto stores</h2>
+            <div className={styles.cardLayout}>
+              {props.coffeeStores.map(({ name, id, imgUrl }) => (
+                <Card
+                  key={id}
+                  className={styles.card}
+                  name={name}
+                  imgUrl={imgUrl || FALLBACK_IMG}
+                  href={`/coffee-store/${id}`}
+                />
+              ))}
+            </div>
+          </div>
         )}
       </main>
     </>

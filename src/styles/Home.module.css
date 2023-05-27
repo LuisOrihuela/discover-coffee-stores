@@ -37,6 +37,10 @@
 
 }
 
+.sectionWrapper {
+  margin-top: 5rem;
+}
+
 /** Breakpoints:
   sm: min-width: 640px;
   md: min-width: 768px;
@@ -100,5 +104,4 @@
 .heroImage {
   position: absolute;
   top: 0px;
-  z-index: 1;
 }

@@ -1,14 +1,14 @@
 import {createApi} from "unsplash-js"
 
 const unsplash = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY,
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY,
 })
 
 const options = {
     method: "GET",
     headers: {
       accept: "application/json",
-      Authorization: process.env.FOURSQUARE_API_KEY,
+      Authorization: process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY,
     },
   };
 
@@ -20,16 +20,16 @@ const options = {
     const res = await unsplash.search.getPhotos({
       query: "coffee shop",
       page: 1,
-      perPage: 10,
+      perPage: 40,
     })
     return res.response.results.map(res => res.urls.small)
   }
 
-  export const fetchCoffeeStores = async () => {
+  export const fetchCoffeeStores = async (latLong = '43.70316409104907,-79.39217225267849', limit = 6) => {
     const photos = await getCoffeeStorePhotos()
       try {
         const response = await fetch(
-         getUrlForCoffeeStores({ latLong: '18.940631284388704%2C-99.2098228106481', query: 'coffee', limit: 6 }),
+         getUrlForCoffeeStores({ latLong , query: 'coffee', limit }),
           options
         ).then(res => res?.json())
 
