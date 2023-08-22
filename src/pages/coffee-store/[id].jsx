@@ -11,7 +11,7 @@ import { FALLBACK_IMG } from "@/constants";
 import { StoreContext } from "@/store/storeContext";
 import { isEmpty } from "@/utils";
 
-// this paths will determine what pages will be generated at build time
+// these paths will determine what pages will be generated at build time
 export async function getStaticPaths() {
   const coffeeStores = await fetchCoffeeStores();
   const paths = coffeeStores.map(({ id }) => ({
